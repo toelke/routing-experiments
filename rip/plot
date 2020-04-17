@@ -1,0 +1,28 @@
+#!/bin/sh -eu
+
+dir=$(mktemp -d)
+
+docker-compose ps --services | while read service; do
+{
+	docker-compose exec -T $service ip -j a s | jq -r ' .[] | if (.ifname | startswith("eth")) then (.addr_info[0] | .local) else empty end' >> $dir/addr_$service
+	docker-compose exec -T $service ip -j r s | jq -r ' .[] | if (.protocol == "bird") then "'$service'" + "\t" + .gateway + "\t" + .dst else empty end' >> $dir/routes
+} < /dev/null
+done
+
+echo "digraph {"
+
+while read line; do
+{
+	set -- $line
+	router=$(grep $2 $dir/addr* | cut -d: -f1 | cut -d_ -f2)
+	echo $1 '->' $router [label='"'$3'"'];
+} < /dev/null
+done < $dir/routes
+for i in $dir/addr_*; do
+	name=$(echo $i | cut -d_ -f2)
+	echo $name [label='"'$name:'\n' $(cat $i)'"'];
+done
+
+echo }
+
+rm -rf $dir

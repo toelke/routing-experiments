@@ -1,0 +1,92 @@
+version: "2"
+services:
+  ab1:
+    image: debian
+    networks:
+      - ab
+    command: sleep 86400
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+  a:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      - ab
+      - ea
+    volumes:
+      - ./bird.conf:/etc/bird/bird.conf:ro
+  b:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      - ab
+      - bc
+    volumes:
+      - ./bird.conf:/etc/bird/bird.conf:ro
+  c:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      - bc
+      - cd
+    volumes:
+      - ./bird.conf:/etc/bird/bird.conf:ro
+  d:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      - cd
+      - de
+    volumes:
+      - ./bird.conf:/etc/bird/bird.conf:ro
+  e:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      - de
+      - ea
+    volumes:
+      - ./bird.conf:/etc/bird/bird.conf:ro
+networks:
+  ab:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+  bc:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.1.0/24
+  cd:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.2.0/24
+  de:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.3.0/24
+  ea:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.4.0/24
