@@ -26,8 +26,6 @@ the "wrong" interface by default. Run `echo 2 >
 
 ## Useful commands
 
-To plot the network as it is defined in the `docker-compose.yml`: `docker run
---rm -it --name dcv -v %CD%:/input pmsipilot/docker-compose-viz render -m
-image docker-compose.yml`
+To plot the network as it is defined in the `docker-compose.yml`: `docker run --rm -it --name dcv -v %CD%:/input pmsipilot/docker-compose-viz render -m image docker-compose.yml`
 
 To get a graphviz file of the network routes, use the `./plot` script.
