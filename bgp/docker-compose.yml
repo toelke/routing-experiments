@@ -1,0 +1,113 @@
+version: "2.1"
+services:
+  ab1:
+    image: debian
+    networks:
+      ab:
+        ipv4_address: 172.20.0.100
+    command: bash -c "ip r r default via 172.20.0.2; sleep 86400"
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+  a:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      ab:
+        ipv4_address: 172.20.0.2
+      ea:
+        ipv4_address: 172.20.4.2
+    volumes:
+      - ./bird-a.conf:/etc/bird/bird.conf:ro
+    sysctls:
+      - net.ipv4.conf.all.rp_filter=2
+  b:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      bc:
+        ipv4_address: 172.20.1.3
+      ab:
+        ipv4_address: 172.20.0.3
+    volumes:
+      - ./bird-b.conf:/etc/bird/bird.conf:ro
+    sysctls:
+      - net.ipv4.conf.all.rp_filter=2
+  c:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      bc:
+        ipv4_address: 172.20.1.4
+      cd:
+        ipv4_address: 172.20.2.4
+    volumes:
+      - ./bird-c.conf:/etc/bird/bird.conf:ro
+    sysctls:
+      - net.ipv4.conf.all.rp_filter=2
+  d:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      cd:
+        ipv4_address: 172.20.2.5
+      de:
+        ipv4_address: 172.20.3.5
+    volumes:
+      - ./bird-d.conf:/etc/bird/bird.conf:ro
+    sysctls:
+      - net.ipv4.conf.all.rp_filter=2
+  e:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      de:
+        ipv4_address: 172.20.3.6
+      ea:
+        ipv4_address: 172.20.4.6
+    volumes:
+      - ./bird-e.conf:/etc/bird/bird.conf:ro
+    sysctls:
+      - net.ipv4.conf.all.rp_filter=2
+networks:
+  ab:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+  bc:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.1.0/24
+  cd:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.2.0/24
+  de:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.3.0/24
+  ea:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.4.0/24
