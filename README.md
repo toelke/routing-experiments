@@ -41,6 +41,22 @@ asymmetric routes. See
 https://www.theurbanpenguin.com/rp_filter-and-lpic-3-linux-security/ for
 details.
 
+# Internet I
+
+The folder `internet` contains an experiment that is a bit like the real internet:
+
+![network topology with internal and external routers](images/internet.png)
+
+This is three ISPs "a", "b" and "c" and two internet exchanges "cix1" and "cix2".
+
+The ISP "c" is small and only has one client/customer network that is attached directly to the border gateway "ce1". It only peers over the CIX "cix1".
+
+The ISPs "a" and "b" both have internal routers ("ai1", "bi1", ...) that attach to the border gateways and the client networks. Please note that the BGP-configuration for both "a" and "b" prohibits exporting the internal network ranges as well as importing their own customers ranges. The former prevents accidental access to internal networks for outsiders, the latter prevents the costly situation of routing your own traffic through the internet when your internal network breaks.
+
+Both internet exchanges ("cix1" and "cix2") are not very well equiped and have no route server. Adding a new peer to either network would mean reconfiguring all attached routers.
+
+I will be building a CIX with routing server next.
+
 ## Plots
 
 To plot the network as it is defined in the `docker-compose.yml`: `docker run --rm -it --name dcv -v %CD%:/input pmsipilot/docker-compose-viz render -m image docker-compose.yml`
