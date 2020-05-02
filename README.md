@@ -1,18 +1,5 @@
 # Experiments with routing protocols
 
-## RIP
-
-https://en.wikipedia.org/wiki/Routing_Information_Protocol 
-
-With this protocol, router broadcast their routing table to other routers on
-request. The routing tables are updated if a shorter path (counted by hops) is
-received.
-
-
-## BGP
-
-# Experiments
-
 ## Easy networks
 
 The folders `rip` and `bgp` contain a small experimental network as docker-compose file.
@@ -41,7 +28,7 @@ asymmetric routes. See
 https://www.theurbanpenguin.com/rp_filter-and-lpic-3-linux-security/ for
 details.
 
-# Internet I
+## Internet I
 
 The folder `internet` contains an experiment that is a bit like the real internet:
 
@@ -57,7 +44,19 @@ Both internet exchanges ("cix1" and "cix2") are not very well equiped and have n
 
 I will be building a CIX with routing server next.
 
-## Plots
+## Internet II
+
+The folder `internet2` is that experiment where "cix1" has installed a route server.
+
+Read here about route servers: https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_bgp/configuration/15-mt/irg-15-mt-book/irg-route-server.html
+
+I had not expected that the route server would have to be configured with each peer, I had hoped for a system where you could just connect to the route server and peering would be set up. But that's probably not important for how CIXe usually operate...
+
+To setup a route server, you could use https://arouteserver.readthedocs.io/en/latest/index.html which seems to automagically do some of the necessary configuration for bigger CIXen.
+
+Next up: Anycast.
+
+# Plots
 
 To plot the network as it is defined in the `docker-compose.yml`: `docker run --rm -it --name dcv -v %CD%:/input pmsipilot/docker-compose-viz render -m image docker-compose.yml`
 
