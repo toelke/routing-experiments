@@ -56,6 +56,37 @@ To setup a route server, you could use https://arouteserver.readthedocs.io/en/la
 
 Next up: Anycast.
 
+## Internet II.1
+
+Well, no.
+
+I implemented a promiscuous route server (you can find it [here](https://github.com/toelke/promiscuous-bgp-route-server)). It allows connections from anyone and will happily push routes to new peers.
+
+The folder `internet2.1` sets up the same "internet" as `internet2` but has this promiscuous server running at IP 10.0.0.3 with AS number 131072.
+
+To test, I connected to it using
+
+```
+docker run --net=internet21_cix1_1 --rm -it --entrypoint bash internet21_cix1-rs
+```
+
+Creating this `/etc/bird/bird.conf`:
+
+```
+protocol device {}
+
+protocol bgp {
+  export none;
+  import all;
+  local as 4711;
+  neighbor  10.0.0.3 as 131072;
+}
+```
+
+Then starting the daemon with `bird -d` and seeing all routes from the "internet" in `birdc show route all`.
+
+Next up: Really Anycast!
+
 # Plots
 
 To plot the network as it is defined in the `docker-compose.yml`: `docker run --rm -it --name dcv -v %CD%:/input pmsipilot/docker-compose-viz render -m image docker-compose.yml`

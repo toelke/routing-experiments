@@ -1,0 +1,272 @@
+version: "2"
+services:
+  cix1-promiscuous:
+    image: toelke158/promiscuous-bgp-route-server
+    networks:
+      cix1_1:
+        ipv4_address: 10.0.0.3
+    command: 10.0.0.2 65010
+  cix1-rs:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      cix1:
+        ipv4_address: 172.20.3.100
+      cix1_1:
+        ipv4_address: 10.0.0.2
+    volumes:
+      - ./bgp-cix1.conf:/etc/bird/bird.conf:ro
+  aclient1:
+    image: debian
+    networks:
+      a_user1:
+        ipv4_address: 172.20.0.100
+    command: bash -c "ip r r default via 172.20.0.2; sleep 86400"
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+  ai1:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      a_user1:
+        ipv4_address: 172.20.0.2
+      a1:
+        ipv4_address: 172.20.1.2
+      a2:
+        ipv4_address: 172.20.2.2
+    volumes:
+      - ./rip.conf:/etc/bird/bird.conf:ro
+  ae1:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      a1:
+        ipv4_address: 172.20.1.3
+      cix1:
+        ipv4_address: 172.20.3.2
+    volumes:
+      - ./bgp-ae1.conf:/etc/bird/bird.conf:ro
+  ae2:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      a2:
+        ipv4_address: 172.20.2.3
+      cix2:
+        ipv4_address: 172.20.4.2
+    volumes:
+      - ./bgp-ae2.conf:/etc/bird/bird.conf:ro
+  ce1:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      c_user1:
+        ipv4_address: 172.20.12.2
+      cix1:
+        ipv4_address: 172.20.3.3
+    volumes:
+      - ./bgp-ce1.conf:/etc/bird/bird.conf:ro
+  cclient1:
+    image: debian
+    networks:
+      c_user1:
+        ipv4_address: 172.20.12.100
+    command: bash -c "ip r r default via 172.20.12.2; sleep 86400"
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+  be1:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      cix1:
+        ipv4_address: 172.20.3.4
+      b4:
+        ipv4_address: 172.20.8.3
+    volumes:
+      - ./bgp-be1.conf:/etc/bird/bird.conf:ro
+  be2:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      cix2:
+        ipv4_address: 172.20.4.3
+      b1:
+        ipv4_address: 172.20.5.2
+    volumes:
+      - ./bgp-be2.conf:/etc/bird/bird.conf:ro
+  bi1:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      b_user1:
+        ipv4_address: 172.20.9.2
+      b1:
+        ipv4_address: 172.20.5.3
+      b2:
+        ipv4_address: 172.20.6.3
+    volumes:
+      - ./rip.conf:/etc/bird/bird.conf:ro
+  bi2:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      b_user2:
+        ipv4_address: 172.20.10.2
+      b2:
+        ipv4_address: 172.20.6.4
+      b3:
+        ipv4_address: 172.20.7.3
+    volumes:
+      - ./rip.conf:/etc/bird/bird.conf:ro
+  bi3:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    networks:
+      b_user3:
+        ipv4_address: 172.20.11.2
+      b3:
+        ipv4_address: 172.20.7.4
+      b4:
+        ipv4_address: 172.20.8.4
+    volumes:
+      - ./rip.conf:/etc/bird/bird.conf:ro
+  bclient1:
+    image: debian
+    networks:
+      b_user1:
+        ipv4_address: 172.20.9.100
+    command: bash -c "ip r r default via 172.20.9.2; sleep 86400"
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+  bclient2:
+    image: debian
+    networks:
+      b_user2:
+        ipv4_address: 172.20.10.100
+    command: bash -c "ip r r default via 172.20.10.2; sleep 86400"
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+  bclient3:
+    image: debian
+    networks:
+      b_user3:
+        ipv4_address: 172.20.11.100
+    command: bash -c "ip r r default via 172.20.11.2; sleep 86400"
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+
+
+networks:
+  a_user1:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+  a1:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.1.0/24
+  a2:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.2.0/24
+
+  cix1:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.3.0/24
+  cix1_1:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24
+  cix2:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.4.0/24
+
+  b1:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.5.0/24
+  b2:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.6.0/24
+  b3:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.7.0/24
+  b4:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.8.0/24
+  b_user1:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.9.0/24
+  b_user2:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.10.0/24
+  b_user3:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.11.0/24
+
+  c_user1:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.12.0/24
