@@ -1,0 +1,33 @@
+services:
+  a:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+      - SYS_ADMIN
+    networks:
+      ab:
+    sysctls:
+      - net.ipv4.conf.all.rp_filter=2
+      - net.ipv6.conf.eth0.accept_ra=0
+    volumes:
+      - ./frr.conf:/etc/frr/frr.conf
+  b:
+    build: ./
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+      - SYS_ADMIN
+    networks:
+      ab:
+    sysctls:
+      - net.ipv4.conf.all.rp_filter=2
+      - net.ipv6.conf.eth0.accept_ra=0
+    volumes:
+      - ./frr.conf:/etc/frr/frr.conf
+networks:
+  ab:
+    driver: bridge
+    enable_ipv6: true
